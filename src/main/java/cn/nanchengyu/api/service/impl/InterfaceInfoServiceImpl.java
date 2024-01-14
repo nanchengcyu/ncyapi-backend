@@ -1,58 +1,40 @@
 package cn.nanchengyu.api.service.impl;
 
-import cn.nanchengyu.api.constant.CommonConstant;
-
-import cn.nanchengyu.api.mapper.InterfaceInfoMapper;
-
-import cn.nanchengyu.api.service.InterfaceInfoService;
-import cn.nanchengyu.api.service.UserService;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import cn.nanchengyu.api.common.ErrorCode;
 import cn.nanchengyu.api.exception.BusinessException;
-import cn.nanchengyu.api.exception.ThrowUtils;
-
+import cn.nanchengyu.api.mapper.InterfaceInfoMapper;
 import cn.nanchengyu.api.model.entity.InterfaceInfo;
-
-
-import cn.nanchengyu.api.model.vo.UserVO;
-import cn.nanchengyu.api.utils.SqlUtils;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
-import cn.hutool.core.collection.CollUtil;
-import org.apache.commons.lang3.ObjectUtils;
+import cn.nanchengyu.api.service.InterfaceInfoService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.sort.SortBuilder;
-import org.elasticsearch.search.sort.SortBuilders;
-import org.elasticsearch.search.sort.SortOrder;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
-import org.springframework.data.elasticsearch.core.SearchHit;
-import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
 
 /**
- * 帖子服务实现
- *
- */
+* @author nanchengyu
+* @description 针对表【interface_info(接口信息)】的数据库操作Service实现
+* @createDate 2024-01-14 17:28:53
+*/
 @Service
-@Slf4j
-public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, InterfaceInfo> implements InterfaceInfoService {
+public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, InterfaceInfo>
+        implements InterfaceInfoService {
 
-    @Resource
-    private UserService userService;
+
+    @Override
+    public void validInterfaceInfo(InterfaceInfo interfaceInfo, boolean add) {
+        if (interfaceInfo == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        String name = interfaceInfo.getName();
+        // 创建时，所有参数必须非空
+        if (add) {
+            if (StringUtils.isAnyBlank(name)) {
+                throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            }
+        }
+        if (StringUtils.isNotBlank(name) && name.length() > 50) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "名称过长");
+        }
+    }
 
 
 
